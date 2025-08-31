@@ -1,4 +1,4 @@
-import { PlayCircleIcon } from 'lucide-react';
+import { PlayCircleIcon, StopCircleIcon } from 'lucide-react';
 import { Cycles } from '../Cycles';
 import { DefaultButton } from '../DefaultButton';
 import { DefaultInput } from '../DefaultInput';
@@ -7,10 +7,11 @@ import type { TaskModel } from '../models/TaskModel';
 import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { getNextCycle } from '../../utils/getNextCycle';
 import { getNextCycleType } from '../../utils/getNextCycleType';
-import { formatSecondsToMinutes } from '../../utils/formatSecondsToMitutes';
+
+import { TaskActionTypes } from '../../contexts/TaskContext/taskActions';
 
 export function MainForm() {
-  const { state, setState } = useTaskContext();
+  const { state, dispatch } = useTaskContext();
   const taskNameInput = useRef<HTMLInputElement>(null);
 
   const nextCycle = getNextCycle(state.currentCycle);
@@ -38,20 +39,15 @@ export function MainForm() {
       type: nextCycleType,
     };
 
-    const secondsRemaining = newTask.duration * 60;
+    dispatch({
+      type: TaskActionTypes.START_TASK,
+      payload: newTask,
+    });
+  }
 
-    setState(prevState => {
-      return {
-        ...prevState,
-        config: {
-          ...prevState.config,
-        },
-        activeTask: newTask,
-        currentCycle: nextCycle,
-        secondsRemaining,
-        formattedSecondsRemaining: formatSecondsToMinutes(secondsRemaining),
-        tasks: [...prevState.tasks, newTask],
-      };
+  function handleStopTask() {
+    dispatch({
+      type: TaskActionTypes.INTERRUPT_TASK,
     });
   }
 
@@ -62,8 +58,9 @@ export function MainForm() {
           LabelText='Task'
           id='input'
           type='text'
-          placeholder='Enter your task'
+          placeholder='Digite sua tarefa'
           ref={taskNameInput}
+          disabled={!!state.activeTask}
         />
       </div>
 
@@ -78,7 +75,26 @@ export function MainForm() {
       )}
 
       <div className='formRow'>
-        <DefaultButton icon={<PlayCircleIcon />} color='green' />
+        {!state.activeTask ? (
+          <DefaultButton
+            aria-label='Iniciar nova tarefa'
+            title='Iniciar nova tarefa'
+            type='submit'
+            icon={<PlayCircleIcon />}
+            color='green'
+            key='submit-button'
+          />
+        ) : (
+          <DefaultButton
+            onClick={handleStopTask}
+            aria-label='Interromper tarefa atual'
+            title='Interromper tarefa atual'
+            type='button'
+            icon={<StopCircleIcon />}
+            color='red'
+            key='stop-button'
+          />
+        )}
       </div>
     </form>
   );
