@@ -1,7 +1,7 @@
 import { Container } from '../../components/Container';
 import { GenericHtml } from '../../components/GenericHtml';
 import { Heading } from '../../components/Heading';
-import { RouterLink } from '../../components/RouterLink';
+import { RouterLink } from '../../components/routerLink';
 import { MainTemplate } from '../../components/templates/MainTemplates';
 
 export function NotFound() {

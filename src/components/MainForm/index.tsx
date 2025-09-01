@@ -14,6 +14,8 @@ import { showMessage } from '../../adapters/showMessage';
 export function MainForm() {
   const { state, dispatch } = useTaskContext();
   const taskNameInput = useRef<HTMLInputElement>(null);
+  const lastTaskName =
+    state.tasks?.length > 0 ? state.tasks[state.tasks.length - 1].name : '';
 
   const nextCycle = getNextCycle(state.currentCycle);
   const nextCycleType = getNextCycleType(nextCycle);
@@ -60,12 +62,13 @@ export function MainForm() {
     <form onSubmit={handleCreateNewTask} action='' className='form'>
       <div className='formRow'>
         <DefaultInput
-          LabelText='Task'
+          LabelText='Atividade'
           id='input'
           type='text'
           placeholder='Digite sua tarefa'
           ref={taskNameInput}
           disabled={!!state.activeTask}
+          defaultValue={lastTaskName}
         />
       </div>
 

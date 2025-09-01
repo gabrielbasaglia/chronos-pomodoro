@@ -7,7 +7,7 @@ import {
   SettingsIcon,
   SunIcon,
 } from 'lucide-react';
-import { RouterLink } from '../RouterLink';
+import { RouterLink } from '../routerLink';
 
 type AvaliableThemes = 'dark' | 'light';
 

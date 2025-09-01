@@ -1,5 +1,5 @@
 import styles from './styles.module.css';
-import { RouterLink } from '../RouterLink';
+import { RouterLink } from '../routerLink';
 
 export function Footer() {
   return (
