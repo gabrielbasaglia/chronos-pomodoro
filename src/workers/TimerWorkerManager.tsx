@@ -1,3 +1,5 @@
+import type { TaskStateModel } from '../components/models/TaskStateModel';
+
 let instance: TimerWorkerManager | null = null;
 
 export class TimerWorkerManager {
@@ -14,7 +16,7 @@ export class TimerWorkerManager {
     return instance;
   }
 
-  postMessage(message: any) {
+  postMessage(message: TaskStateModel) {
     this.workers.postMessage(message);
   }
 
