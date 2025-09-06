@@ -6,8 +6,15 @@ import { Heading } from '../../components/Heading';
 
 import { MainTemplate } from '../../components/templates/MainTemplates';
 import styles from './style.module.css';
+import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
+import { formatDate } from '../../utils/formatDate';
+import { getTaskStatus } from '../../utils/getTaskStatus';
+import { sortTasks } from '../../utils/sortTask';
 
 export function History() {
+  const { state } = useTaskContext();
+  const sortedTasks = sortTasks({ tasks: state.tasks });
+
   return (
     <MainTemplate>
       <Container>
@@ -38,14 +45,19 @@ export function History() {
             </thead>
 
             <tbody>
-              {Array.from({ length: 20 }).map((_, index) => {
+              {sortedTasks.map(task => {
+                const taskTypeDicionary = {
+                  workTime: 'Foco',
+                  shortBreakTime: 'Pausa curta',
+                  longBreakTime: 'Pausa longa',
+                };
                 return (
-                  <tr key={index}>
-                    <td>Estudar</td>
-                    <td>25min</td>
-                    <td>20/04/2025 08:00</td>
-                    <td>Completa</td>
-                    <td>Foco</td>
+                  <tr key={task.id}>
+                    <td>{task.name}</td>
+                    <td>{task.duration}</td>
+                    <td>{formatDate(task.startDate)}</td>
+                    <td>{getTaskStatus(task, state.activeTask)}</td>
+                    <td>{taskTypeDicionary[task.type]}</td>
                   </tr>
                 );
               })}
