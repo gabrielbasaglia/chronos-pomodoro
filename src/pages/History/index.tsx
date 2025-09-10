@@ -10,10 +10,12 @@ import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { formatDate } from '../../utils/formatDate';
 import { getTaskStatus } from '../../utils/getTaskStatus';
 import { sortTasks, type SortTasksOptions } from '../../utils/sortTask';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { TaskActionTypes } from '../../contexts/TaskContext/taskActions';
 
 export function History() {
-  const { state } = useTaskContext();
+  const { state, dispatch } = useTaskContext();
+  const hasTasks = state.tasks.length > 0;
   const [sortTasksOptions, setSortTaskOptions] = useState<SortTasksOptions>(
     () => {
       return {
@@ -23,6 +25,17 @@ export function History() {
       };
     },
   );
+
+  useEffect(() => {
+    setSortTaskOptions(prevState => ({
+      ...prevState,
+      tasks: sortTasks({
+        tasks: state.tasks,
+        field: prevState.field,
+        direction: prevState.direction,
+      }),
+    }));
+  }, [state.tasks]);
 
   function handleSortTasks({ field }: Pick<SortTasksOptions, 'field'>) {
     const newDirection = sortTasksOptions.direction === 'desc' ? 'asc' : 'desc';
@@ -38,23 +51,45 @@ export function History() {
     });
   }
 
+  function handleResetHistory() {
+    if (!confirm('Deseja realmente apagar todo o histórico?')) return;
+
+    dispatch({
+      type: TaskActionTypes.RESET_STATE,
+    });
+  }
+
   return (
     <MainTemplate>
       <Container>
         <Heading>
           <span>History</span>
-          <span className={styles.buttonContainer}>
-            <DefaultButton
-              icon={<TrashIcon />}
-              color='red'
-              aria-label='Apagar todo o histórico'
-              title='Apagar histórico'
-            />
-          </span>
+          {hasTasks && (
+            <span className={styles.buttonContainer}>
+              <DefaultButton
+                onClick={handleResetHistory}
+                icon={<TrashIcon />}
+                color='red'
+                aria-label='Apagar todo o histórico'
+                title='Apagar histórico'
+              />
+            </span>
+          )}
         </Heading>
       </Container>
 
       <Container>
+        {!hasTasks && (
+          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
+            Nenhuma tarefa registrada até o momento.
+          </p>
+        )}
+
+        {hasTasks && (
+          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
+            Clique nos títulos das colunas para ordenar as tarefas.
+          </p>
+        )}
         <div className={styles.responsiveTable}>
           <table>
             <thead>
